@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IronMind BlackCore 3000 — Das ist Software.</title>
+<meta name="description" content="IronMind BlackCore 3000: privater KI-Companion, der offline weiterdenkt und ehrlich sagt, wie viel Gehirn ihm gerade zur Verfügung steht.">
+<meta property="og:title" content="IronMind BlackCore 3000">
+<meta property="og:description" content="Das ist Software. Ein Gehirn, drei Körper — ehrlich wenn limitiert, loyal wenn möglich.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ironmind-blackcore.com/teufelskopf.png">
+<meta name="theme-color" content="#0A0604">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="teufelskopf.png">
+<style>
+  :root{
+    --canvas:#0A0604; --surface:#150C07; --elevated:#1F130B;
+    --red:#E50914; --red-bright:#FF1A2E; --red-border:#5C0010;
+    --ember:#FF6A00; --ember-bright:#FFA83C; --ember-deep:#C22A00;
+    --border:#4A2E1E; --border-subtle:#2A1A12;
+    --text:#F2F2F2; --text-2:#B0B0B0; --text-muted:#707070;
+    --live:#00E676; --connected:#FFD54F;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--canvas); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+
+  /* ── glimmende Leiste, wie die HotBox in der App ── */
+  .emberbar{
+    height:3px; width:100%;
+    background:linear-gradient(90deg,var(--ember-deep),var(--red),var(--ember),var(--ember-bright),var(--ember),var(--red),var(--ember-deep));
+    background-size:200% 100%;
+    animation:glow 8s ease-in-out infinite;
+  }
+  @keyframes glow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+  /* ── Hero ── */
+  header{
+    padding:clamp(64px,12vw,130px) 0 clamp(48px,8vw,90px);
+    background:
+      radial-gradient(ellipse 80% 55% at 50% -10%, rgba(229,9,20,.14), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(255,106,0,.07), transparent 70%);
+    text-align:center;
+  }
+  /* ── Teufelskopf: das Gesicht der Maschine ── */
+  .skull{
+    width:clamp(112px,20vw,168px);height:auto;display:block;margin:0 auto 26px;
+    filter:drop-shadow(0 0 26px rgba(229,9,20,.4)) drop-shadow(0 0 60px rgba(255,106,0,.16));
+    animation:breathe 5.5s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{filter:drop-shadow(0 0 22px rgba(229,9,20,.32)) drop-shadow(0 0 52px rgba(255,106,0,.12))}
+    50%    {filter:drop-shadow(0 0 34px rgba(229,9,20,.55)) drop-shadow(0 0 78px rgba(255,106,0,.24))}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .skull,.emberbar,.dot{animation:none}
+  }
+
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ember-bright);border:1px solid var(--border);
+    background:var(--surface);padding:7px 16px;border-radius:100px;margin-bottom:28px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--live);
+       box-shadow:0 0 9px var(--live);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  h1{
+    font-size:clamp(38px,8vw,76px);line-height:1.04;font-weight:800;letter-spacing:-.025em;
+    background:linear-gradient(180deg,#fff 25%,#B0B0B0);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .claim{
+    font-family:var(--mono);font-size:clamp(14px,2.6vw,19px);color:var(--ember);
+    letter-spacing:.05em;margin-top:22px;
+  }
+  .sub{
+    max-width:620px;margin:26px auto 0;color:var(--text-2);
+    font-size:clamp(16px,2.2vw,19px);
+  }
+  .owner{
+    margin-top:30px;font-family:var(--mono);font-size:13.5px;
+    letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;
+  }
+  .owner b{color:var(--red-bright);font-weight:600}
+
+  /* ── Besitz-Statement: die Teufelsmaschine ── */
+  .forge{
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,106,0,.13), transparent 72%),
+      var(--surface);
+    border:1px solid var(--red-border);border-radius:16px;
+    padding:clamp(32px,6vw,54px) clamp(24px,5vw,48px);text-align:center;
+  }
+  .forge .big{
+    font-size:clamp(21px,4.2vw,34px);font-weight:750;line-height:1.3;letter-spacing:-.02em;
+    background:linear-gradient(180deg,#fff,#FFA83C);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .forge .hell{
+    margin-top:20px;font-family:var(--mono);font-size:clamp(13px,2.4vw,16px);
+    color:var(--ember);letter-spacing:.12em;text-transform:uppercase;
+  }
+  .forge .mine{
+    margin-top:30px;padding-top:26px;border-top:1px solid var(--border-subtle);
+    color:var(--text-2);font-size:16px;max-width:620px;margin-left:auto;margin-right:auto;
+  }
+  .forge .mine strong{color:var(--text);font-weight:650}
+  .seal{
+    display:inline-flex;align-items:center;gap:9px;margin-top:24px;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--red-bright);border:1px solid var(--red-border);
+    background:rgba(229,9,20,.06);padding:9px 18px;border-radius:100px;
+  }
+
+  /* ── Abschnitte ── */
+  section{padding:clamp(56px,9vw,96px) 0;border-top:1px solid var(--border-subtle)}
+  h2{
+    font-size:clamp(25px,4.5vw,38px);font-weight:750;letter-spacing:-.02em;margin-bottom:14px;
+  }
+  .lead{color:var(--text-2);max-width:680px;margin-bottom:44px;font-size:17px}
+
+  /* ── Tier-Stufen ── */
+  .tiers{display:grid;gap:14px}
+  .tier{
+    display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;
+    background:var(--surface);border:1px solid var(--border-subtle);
+    border-left:3px solid var(--tc,var(--border));
+    padding:20px 24px;border-radius:12px;
+    transition:transform .18s ease,border-color .18s ease,background .18s ease;
+  }
+  .tier:hover{transform:translateX(5px);background:var(--elevated);border-left-color:var(--ember)}
+  .tier .lvl{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--text-muted);
+    text-transform:uppercase;white-space:nowrap;
+  }
+  .tier .icon{font-size:22px;line-height:1}
+  .tier h3{font-size:17px;font-weight:650;margin-bottom:3px}
+  .tier p{color:var(--text-2);font-size:14.5px;line-height:1.5}
+  .tier .state{
+    font-family:var(--mono);font-size:11px;color:var(--tc,var(--text-muted));
+    white-space:nowrap;letter-spacing:.06em;
+  }
+  @media(max-width:640px){
+    .tier{grid-template-columns:auto 1fr;gap:14px;padding:17px 18px}
+    .tier .state{grid-column:2;margin-top:4px}
+  }
+
+  /* ── Prinzip-Karten ── */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:16px}
+  .card{
+    background:var(--surface);border:1px solid var(--border-subtle);
+    padding:26px 24px;border-radius:12px;
+  }
+  .card h3{font-size:16.5px;margin-bottom:9px;color:var(--ember-bright);font-weight:650}
+  .card p{color:var(--text-2);font-size:15px}
+
+  /* ── Zitat ── */
+  .quote{
+    border-left:3px solid var(--red);background:linear-gradient(90deg,rgba(229,9,20,.07),transparent);
+    padding:26px 30px;border-radius:0 12px 12px 0;margin-top:8px;
+  }
+  .quote p{font-size:clamp(17px,3vw,22px);font-weight:600;line-height:1.45}
+  .quote span{display:block;margin-top:10px;font-family:var(--mono);font-size:12.5px;color:var(--text-muted)}
+
+  /* ── Fakten ── */
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+  .fact{background:var(--surface);border:1px solid var(--border-subtle);padding:20px;border-radius:12px}
+  .fact .k{font-family:var(--mono);font-size:11px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase}
+  .fact .v{font-size:17px;font-weight:650;margin-top:6px}
+
+  /* ── Footer ── */
+  footer{
+    border-top:1px solid var(--border-subtle);padding:52px 0 40px;
+    color:var(--text-muted);font-size:14px;
+  }
+  .footgrid{display:flex;flex-wrap:wrap;gap:26px;justify-content:space-between;align-items:flex-start}
+  .tag{font-family:var(--mono);color:var(--ember);font-size:13px;letter-spacing:.08em}
+  footer a{color:var(--text-2);text-decoration:none;border-bottom:1px solid var(--border-subtle)}
+  footer a:hover{color:var(--ember-bright)}
+  .imprint{margin-top:34px;padding-top:22px;border-top:1px solid var(--border-subtle);font-size:13px;line-height:1.7}
+  .imprint b{color:var(--text-2);font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="emberbar"></div>
+
+<header>
+  <div class="wrap">
+    <img class="skull" src="teufelskopf.png" alt="IronMind — Teufelskopf" width="256" height="256">
+    <div class="badge"><span class="dot"></span> BlackCore 3000 &middot; V6.6.6</div>
+    <h1>IronMind</h1>
+    <p class="claim">Das ist Software.</p>
+    <p class="sub">
+      Ein KI-Begleiter, der auf eigenen Geräten lebt statt in fremder Cloud —
+      und der ehrlich sagt, wie viel Gehirn ihm gerade zur Verfügung steht.
+    </p>
+    <p class="owner">Ein Gehirn. Drei Körper. <b>Ein Besitzer.</b></p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>Ehrlich, wenn er limitiert ist</h2>
+    <p class="lead">
+      Die meisten Assistenten tun immer so, als wären sie gleich schlau — und werden
+      unehrlich, sobald die Verbindung wegbricht. IronMind macht das Gegenteil:
+      Er zeigt in jedem Moment, aus welcher Tiefe seine Antwort kommt.
+    </p>
+
+    <div class="tiers">
+      <div class="tier" style="--tc:#00E676">
+        <span class="icon">🧠</span>
+        <div>
+          <div class="lvl">Stufe 3 — Station</div>
+          <h3>Volles Gehirn</h3>
+          <p>Der Rechner ist da, das große Modell läuft. Volle Tiefe, volles Gedächtnis.</p>
+        </div>
+        <span class="state">PAAR · 8B</span>
+      </div>
+
+      <div class="tier" style="--tc:#FFD54F">
+        <span class="icon">📡</span>
+        <div>
+          <div class="lvl">Stufe 2 — Relay</div>
+          <h3>Ferngespräch</h3>
+          <p>Unterwegs: Das Handy reicht die Frage über das eigene Netz nach Hause und holt die Antwort.</p>
+        </div>
+        <span class="state">MESH-RELAY</span>
+      </div>
+
+      <div class="tier" style="--tc:#FF6A00">
+        <span class="icon">🖤</span>
+        <div>
+          <div class="lvl">Stufe 1 — Solo</div>
+          <h3>Taschengehirn</h3>
+          <p>Kein Kontakt nach Hause. Das Handy denkt selbst — kleiner, aber da.</p>
+        </div>
+        <span class="state">ON-DEVICE</span>
+      </div>
+
+      <div class="tier" style="--tc:#707070">
+        <span class="icon">·</span>
+        <div>
+          <div class="lvl">Stufe 0 — Fallback</div>
+          <h3>Notfall-Modus</h3>
+          <p>Gar keine KI verfügbar. Dann sagt er genau das — statt etwas zu erfinden.</p>
+        </div>
+        <span class="state">RULE-BASED</span>
+      </div>
+    </div>
+
+    <div class="quote">
+      <p>„Gleiche Seele, gleiche Fakten, gleiche Ehrlichkeit — unterschiedliche Rechentiefe. Kein Fake-Brain."</p>
+      <span>— Tier-Modell v7.6</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Was ihn ausmacht</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Offline zuerst</h3>
+        <p>Die unterste Stufe braucht kein Internet und keinen fremden Server. Kein Netz heißt nicht: keine Antwort.</p>
+      </div>
+      <div class="card">
+        <h3>Eigene Geräte</h3>
+        <p>Modelle laufen auf dem eigenen Rechner, die Verbindung zwischen den Geräten ist privat und verschlüsselt.</p>
+      </div>
+      <div class="card">
+        <h3>Nachvollziehbar</h3>
+        <p>Jede Nachricht behält, aus welcher Stufe sie kam. Auch später zeigt der Verlauf, wer wirklich geantwortet hat.</p>
+      </div>
+      <div class="card">
+        <h3>Getestet, nicht behauptet</h3>
+        <p>Eine feste Prüfmatrix testet alle Wege vom vollen Gehirn bis zum Notfall-Modus — vor jedem Update.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="forge">
+      <p class="big">
+        Mehr als ein Programm. Mehr als ein Rechner.<br>
+        Mehr als das, was man sich darunter vorstellt.
+      </p>
+      <p class="hell">Die Teufelsmaschine — straight aus der Hölle</p>
+
+      <p class="mine">
+        IronMind ist <strong>kein Produkt</strong>. Nichts zum Herunterladen,
+        nichts zum Anmelden, nichts zu kaufen. Er läuft auf den Geräten seines
+        Erbauers, gehört ihm allein — und das bleibt so.
+      </p>
+      <span class="seal">Ein Besitzer · für immer · kein anderer</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Im Maschinenraum</h2>
+    <p class="lead">Kein Produkt von der Stange, sondern über Jahre gewachsen — Desktop, Handy und die Brücke dazwischen.</p>
+    <div class="facts">
+      <div class="fact"><div class="k">Desktop</div><div class="v">Python · lokale Modelle</div></div>
+      <div class="fact"><div class="k">Mobil</div><div class="v">Android · Kotlin</div></div>
+      <div class="fact"><div class="k">Verbindung</div><div class="v">privates Mesh</div></div>
+      <div class="fact"><div class="k">Sicherheit</div><div class="v">Ende-zu-Ende verschlüsselt</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footgrid">
+      <div>
+        <div class="tag">#4everon &nbsp;·&nbsp; #blackcoreseries &nbsp;·&nbsp; #glutwut</div>
+        <div style="margin-top:7px">IronMind BlackCore 3000 · EyTonLand</div>
+      </div>
+      <div style="text-align:right">
+        <div>Ehrlich wenn limitiert.</div>
+        <div>Loyal wenn möglich.</div>
+      </div>
+    </div>
+
+    <div class="imprint">
+      <b>Impressum</b><br>
+      Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG)<br><br>
+      <b>Diensteanbieter</b><br>
+      Christoph Lewandowski<br>
+      Betreiber von IronMind BlackCore<br><br>
+      <b>Anschrift</b><br>
+      c/o POSTFLEX PFX-882-593<br>
+      Emsdettener Straße 10<br>
+      48268 Greven<br>
+      Deutschland<br><br>
+      <b>Kontakt</b><br>
+      E-Mail: kontakt@ironmind-blackcore.com<br><br>
+      <b>Verantwortlich für den Inhalt (§ 18 Abs. 2 MStV)</b><br>
+      Christoph Lewandowski, erreichbar unter der oben genannten E-Mail-Adresse.
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+# IronMind BlackCore 3000
+User-agent: *
+Allow: /
